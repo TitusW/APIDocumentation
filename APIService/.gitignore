@@ -1,0 +1,5 @@
+﻿# Ignore
+appsettings.*.json
+
+# Allow
+!appsettings.Sample.json
