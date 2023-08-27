@@ -3,6 +3,10 @@ using APIService.Data;
 using APIService.Repositories;
 using APIService.Usecases;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +30,39 @@ builder.Services.AddControllers().AddJsonOptions(options =>
  });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Auth header using bearer scheme (\"Bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+});
 
 builder.Services.AddScoped<IAPIDefinitionRepo, APIDefinitionRepo>();
 builder.Services.AddScoped<IAPIFieldRepo, APIFieldRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IUserUsecase, UserUsecase>();
+builder.Services.AddScoped<IAuthUsecase, AuthUsecase>();
 builder.Services.AddScoped<IAPIDefinitionUsecase, APIDefinitionUsecase>();
 builder.Services.AddScoped<IAPIFieldUsecase, APIFieldUsecase>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+    });
 
 var app = builder.Build();
 

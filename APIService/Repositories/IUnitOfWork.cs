@@ -9,6 +9,8 @@ namespace APIService.Repositories
 
         IAPIFieldRepo APIFieldRepo { get; }
 
+        IUserRepo UserRepo { get; }
+
         Task<bool> SaveAsync();
     }
 }

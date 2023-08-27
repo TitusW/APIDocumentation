@@ -16,7 +16,9 @@ namespace APIService.Repositories
 
         public IAPIFieldRepo APIFieldRepo => new APIFieldRepo(_context);
 
-		public async Task<bool> SaveAsync()
+        public IUserRepo UserRepo => new UserRepo(_context);
+
+        public async Task<bool> SaveAsync()
 		{
 			return await _context.SaveChangesAsync() > 0;
 		}

@@ -10,6 +10,8 @@ namespace APIService.Data
 
         public DbSet<APIField> APIFields { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public APIServiceContext(DbContextOptions<APIServiceContext> options) : base(options)
         {
         }
